@@ -20,7 +20,7 @@ title: 你好，markdown
 
 
 ## H2
-![image](images/fox_icon.png)
+![image](https://raw.githubusercontent.com/EnderDFox/FoxBlog/gh-pages/_posts/images/fox_icon.png)
 
 ### H3
 

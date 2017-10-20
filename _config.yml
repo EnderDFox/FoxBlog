@@ -1,2 +1,3 @@
 baseurl: /FoxBlog
 theme: jekyll-theme-dinky
+raw_post_images: https://raw.githubusercontent.com/EnderDFox/FoxBlog/gh-pages/_posts/images
