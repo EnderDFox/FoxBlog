@@ -20,6 +20,7 @@ title: 你好，世界
 
 
 ## H2
+![image](images/fox_icon.png)
 
 ### H3
 
