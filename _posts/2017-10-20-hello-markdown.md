@@ -25,4 +25,7 @@ title: 你好，markdown
 ### H3
 ![image]({{site.url_images}}fox_icon.png)
 
+
+{{site.url_images}}
+
 {{ page.date | date_to_string }}
