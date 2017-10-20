@@ -23,5 +23,6 @@ title: 你好，markdown
 ![image](https://raw.githubusercontent.com/EnderDFox/FoxBlog/gh-pages/_posts/images/fox_icon.png)
 
 ### H3
+![image]({{raw_post_images}}fox_icon.png)
 
 {{ page.date | date_to_string }}
