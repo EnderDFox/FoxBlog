@@ -1,6 +1,6 @@
 ---
 layout: default
-title: 你好，世界
+title: 你好，markdown
 ---
 {{ page.title }}
 测试github pages 的 md 编辑功能
