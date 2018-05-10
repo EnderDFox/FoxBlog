@@ -2,6 +2,7 @@
 
 - [IDE](#ide)
     - [VSCode](#vscode)
+        - [debug时的路径问题](#debug时的路径问题)
 - [语法](#语法)
     - [Package](#package)
     - [切片](#切片)
@@ -35,7 +36,7 @@
 为了方便最好配置  .code/launch.json
 
 e.g.
-```
+```json
 {
     "version": "0.2.0",
     "configurations": [
@@ -44,17 +45,33 @@ e.g.
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "remotePath": "",
+            "remotePath": "../../",
             "port": 2345,
             "host": "127.0.0.1",
-            "program": "${workspaceFolder}",
-            "env": {},
+            // "program": "${fileDirname}",
+            "program": "${workspaceFolder}/src/pm/main.go",
+            "env": {
+                "GOPATH":"D:/code/go/" 
+            },
+            "cwd": "${workspaceFolder}",//解决`debug时的路径问题`
             "args": [],
             "showLog": true
         }
     ]
 }
 ```
+### debug时的路径问题
+
+main.go位于`src/pm/`
+
+工作目录下有个`config.xml`
+
+默认情况 go要访问这个xml, 需要用相对路径 `../../config.xml`
+
+如果想用绝对路径 `./config.xml` 访问
+
+需要在launch.json设置 `"cwd": "${workspaceFolder}",`
+
 # 语法
 ## Package
 
