@@ -1,2 +1,0 @@
-# FoxBlog
-Fox's Blog
