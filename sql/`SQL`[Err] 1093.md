@@ -1,0 +1,1 @@
+> [Err] 1093 - You can't specify target table 'ta' for update in FROM clause
