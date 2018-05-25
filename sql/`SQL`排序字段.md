@@ -1,6 +1,6 @@
 给表设定一个字段,专门用于排序,本文是相关操作的代码
 
-# 表结构
+# 示例表
 
 ```sql
 DROP TABLE IF EXISTS `ta`;
@@ -10,6 +10,7 @@ CREATE TABLE `ta` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8;
 ```
+
 # 读取序列号
 
 ```sql
