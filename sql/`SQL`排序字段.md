@@ -36,7 +36,7 @@ update ta,(select  (@i:=@i+1)  i,ta.id from  ta  ,(select   @i:=0)  t2 WHERE is_
 SELECT * FROM ta ORDER BY sort DESC,id DESC
 ```
 
-# 赠加数据
+# 增加数据
 
 ```sql
 insert into ta(sort) values
