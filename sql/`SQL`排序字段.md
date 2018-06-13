@@ -21,7 +21,7 @@ select @rownum:=@rownum+1 as rownum, a.* from pm_version a order by a.vid desc l
 ```
 或
 ```sql
-select  (@i:=@i+1)  i,a.* from  pm_version a  ,(select   @i:=0)  t2 order by a.sort,a.vid desc ;
+SELECT (@i:=@i+1)  i,a.* FROM  pm_version a  ,(SELECT   @i:=0)  t2 ORDER BY a.sort,a.vid DESC ;
 ```
 
 # 3. 重设sort
@@ -29,7 +29,7 @@ select  (@i:=@i+1)  i,a.* from  pm_version a  ,(select   @i:=0)  t2 order by a.s
 为一个表的sort字段,设置新值
 
 ```sql
-update ta,(select  (@i:=@i+1)  i,ta.id from  ta  ,(select   @i:=0)  t2 WHERE is_del=0 order by id) b set sort = b.i where ta.id=b.id
+UPDATE ta,(SELECT  (@i:=@i+1)  i,ta.id FROM  ta  ,(SELECT   @i:=0)  t2 WHERE is_del=0 ORDER BY id) b SET sort = b.i WHERE ta.id=b.id
 ```
 
 # 4. 读取数据
@@ -42,21 +42,23 @@ SELECT * FROM ta ORDER BY sort DESC,id DESC
 
 # 5. 增加数据
 
-新增数据时, 需要`sort=最大sort+1`
+## 新增数据时, 需要`sort=最大sort+1`
 
 ```sql
-insert into ta(sort) values
+INSERT INTO ta(sort) VALUES
 (
   (SELECT IFNULL((SELECT ms FROM (SELECT max(sort)+1 AS ms FROM ta) b),1))
 )
 ```
+
+## 新增数据时, 需要`sort=目标sort+1` 目标sort后的
 
 ## 5.1. update为最大+1
 
 将一条数据的sort更新为`最大sort+1`
 
 ```sql
-update ta set sort = (SELECT ms FROM (SELECT max(sort)+1 AS ms FROM ta) b)
+UPDATE ta SET sort = (SELECT ms FROM (SELECT max(sort)+1 AS ms FROM ta) b)
 ```
 
 # 6. 交换排序
@@ -69,28 +71,33 @@ update ta set sort = (SELECT ms FROM (SELECT max(sort)+1 AS ms FROM ta) b)
 UPDATE ta a,ta b,
 	(SELECT @a:=ta.sort va FROM ta WHERE ta.id=1) tas,
 	(SELECT @b:=ta.sort vb FROM ta WHERE ta.id=2) tbs 
-SET a.sort = @b,b.sort=@a where a.id=1 and b.id=2
+SET a.sort = @b,b.sort=@a WHERE a.id=1 AND b.id=2
 ```
 
 ## 6.2 交换到其它位置
 
-为了将`数据a`**置顶**或**置底**, 需要将`a`的sort插入到目标位置, 并且相关的数据sort都要+1或-1,*TODO*, 可以参见 [插入数据](#插入数据)
+为了将`数据a`**置顶**或**置底**, 需要将`a`的sort插入到目标位置, 并且相关的数据sort都要+1或-1
 
-# 7. 插入数据
+**TODO** 被交换的row的sort还没有改呢
 
-两种插入方式,用的sql大体相同, 仅 修改`WHERE v1.sort > (SELECT`部分的代码
+# 7. 交换到目标位置
+
+两种方式,用的sql大体相同, 仅 修改`WHERE v1.sort > (SELECT`部分的代码
 
 假设目标id是104
 
 ```sql
-UPDATE pm.pm_version SET add_uid=2 WHERE vid in
-(
-select mvid from (SELECT max(vid) as mvid FROM pm.pm_version as v1 
-WHERE v1.sort > (SELECT v2.sort FROM pm.pm_version as v2 WHERE vid = 104)) as a
+UPDATE ta SET sort=sort+1 WHERE id IN (
+	SELECT id FROM
+	(
+		SELECT id FROM ta AS v1 
+		WHERE v1.sort > 
+			(SELECT sort FROM ta WHERE id = 5)
+	) as v2
 )
 ```
 
-## 7.1. 在目标id位置后插入数据
+## 7.1. 交换数据到目标id位置后
 
 需要 **大于目标id的数据** 设置为 `sort+1`
 
@@ -100,7 +107,7 @@ sql用 `>`
 WHERE v1.sort > (SELECT
 ```
 
-## 7.2. 在目标id位置前插入数据
+## 7.2. 交换数据到目标id位置前
 
 需要 **大于等于目标id的数据** 设置为 `sort+1`
 
