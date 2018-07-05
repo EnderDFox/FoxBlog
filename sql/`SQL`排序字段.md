@@ -61,58 +61,48 @@ INSERT INTO ta(sort) VALUES
 UPDATE ta SET sort = (SELECT ms FROM (SELECT max(sort)+1 AS ms FROM ta) b)
 ```
 
-# 6. 交换排序
+# 6. 改变排序
 
-## 6.1. 交换相邻
+## 6.1. 交换两条数据的sort
 
-最简单的交换 a,b相邻,仅交换二者的sort
+最简单的交换 仅交换a,b两个数据的sort, 其它sort不受影响
 
 ```sql
-UPDATE ta a,ta b,
-	(SELECT @a:=ta.sort va FROM ta WHERE ta.id=1) tas,
-	(SELECT @b:=ta.sort vb FROM ta WHERE ta.id=2) tbs 
-SET a.sort = @b,b.sort=@a WHERE a.id=1 AND b.id=2
+UPDATE pm_version AS ta,pm_version AS tb,
+	(SELECT @a:=sort FROM pm_version WHERE vid=124) AS tt1,
+	(SELECT @b:=sort FROM pm_version WHERE vid=125) AS tt2
+SET ta.sort = @b,tb.sort=@a WHERE ta.vid=124 AND tb.vid=125
 ```
 
-## 6.2 交换到其它位置
+## 6.2. 移动到更小的sort
 
-为了将`数据a`**置顶**或**置底**, 需要将`a`的sort插入到目标位置, 并且相关的数据sort都要+1或-1
-
-**TODO** 被交换的row的sort还没有改呢
-
-# 7. 交换到目标位置
-
-两种方式,用的sql大体相同, 仅 修改`WHERE v1.sort > (SELECT`部分的代码
-
-假设目标id是104
+将一条已有数据a移动到另一个数据b,  b的sort比a小, b~a(包括b) 之间的数据sort+1
 
 ```sql
-UPDATE ta SET sort=sort+1 WHERE id IN (
-	SELECT id FROM
-	(
-		SELECT id FROM ta AS v1 
-		WHERE v1.sort > 
-			(SELECT sort FROM ta WHERE id = 5)
-	) as v2
-)
+UPDATE pm.pm_version AS ta, pm_version AS tb,
+ (SELECT @a := sort FROM pm.pm_version WHERE vid = 130) AS tt1,
+ (SELECT @b := sort FROM pm.pm_version WHERE vid = 122) AS tt2
+SET ta.sort = @b, tb.sort = tb.sort + 1
+WHERE
+	ta.vid = 130
+AND tb.vid <> 130
+AND tb.sort >= @b
+AND tb.sort < @a 
 ```
 
-## 7.1. 交换数据到目标id位置后
+## 6.2. 移动到更大的sort
 
-需要 **大于目标id的数据** 设置为 `sort+1`
-
-sql用 `>`
+将一条已有数据a移动到另一个数据b,  b的sort比a大, a~b(包括b) 之间的数据sort-1
 
 ```sql
-WHERE v1.sort > (SELECT
+UPDATE pm.pm_version AS ta, pm_version AS tb,
+ (SELECT @va:=122 FROM pm.pm_version) AS ttva,
+ (SELECT @vb:=131 FROM pm.pm_version) AS ttvb,
+ (SELECT @a := ta0.sort,@b := tb0.sort FROM pm.pm_version as ta0,pm.pm_version as tb0 WHERE ta0.vid = @va AND tb0.vid=@vb) AS tt1
+SET ta.sort = @b, tb.sort = tb.sort - 1
+WHERE
+	ta.vid = @va
+AND tb.vid <> @va
+AND tb.sort > @a
+AND tb.sort <= @b
 ```
-
-## 7.2. 交换数据到目标id位置前
-
-需要 **大于等于目标id的数据** 设置为 `sort+1`
-
-sql用 `>=`
-
-```sql
-WHERE v1.sort >= (SELECT
-``` 
