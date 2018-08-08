@@ -100,8 +100,9 @@ ADD COLUMN `is_del`  tinyint(3) UNSIGNED NOT NULL DEFAULT 0 AFTER `color`;
 -- #### dept表修改
 
 UPDATE mag_department SET pid=1;
-UPDATE mag_department SET config=2 WHERE name='质检';
-UPDATE mag_department SET config=4 WHERE name='策划';
+UPDATE mag_department SET config=1 WHERE fid=0;
+UPDATE mag_department SET config=3 WHERE name='质检';
+UPDATE mag_department SET config=5 WHERE name='策划';
 DELETE FROM mag_department WHERE name='美术管理';
 
 -- #### user的did信息导入 user_dept
